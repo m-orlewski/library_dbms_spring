@@ -10,6 +10,7 @@ import com.dev.backend.model.Reservation;
 import com.dev.backend.BookRepository;
 import com.dev.backend.ClientRepository;
 import com.dev.backend.ReservationRepository;
+import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,8 +41,8 @@ public class ReservationController {
 	}
 
 	@GetMapping("/reservations/{id}")
-	public ResponseEntity<Reservation> getReservationById(@PathVariable(value = "id") Long reservationId) {
-		Reservation reservation = reservationRepository.findById(reservationId).get();
+	public ResponseEntity<Reservation> getReservationById(@PathVariable(value = "id") Long reservationId) throws ResourceNotFoundException {
+		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 		return ResponseEntity.ok().body(reservation);
 	}
 
@@ -63,8 +64,8 @@ public class ReservationController {
 	}
 
 	@PutMapping("/reservations/{id}")
-	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") Long reservationId, @RequestBody Reservation reservationRequest) {
-		Reservation reservation = reservationRepository.findById(reservationId).get();
+	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") Long reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
+		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
         reservation.setStatus(reservationRequest.getStatus());
         reservation.setDueDate(reservationRequest.getDueDate());
@@ -77,8 +78,8 @@ public class ReservationController {
 	}
 
 	@DeleteMapping("/reservations/{id}")
-	public Map<String, Boolean> deleteReservation(@PathVariable(value = "id") Long reservationId) {
-		Reservation reservation = reservationRepository.findById(reservationId).get();
+	public Map<String, Boolean> deleteReservation(@PathVariable(value = "id") Long reservationId) throws ResourceNotFoundException {
+		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
 		reservationRepository.delete(reservation);
 		Map<String, Boolean> response = new HashMap<>();

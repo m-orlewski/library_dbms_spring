@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.dev.backend.model.Book;
 import com.dev.backend.BookRepository;
+import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,8 @@ public class BookController {
 	}
 
 	@GetMapping("/books/{id}")
-	public ResponseEntity<Book> getBookById(@PathVariable(value = "id") Long bookId) {
-		Book book = bookRepository.findById(bookId).get();
+	public ResponseEntity<Book> getBookById(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 		return ResponseEntity.ok().body(book);
 	}
 
@@ -41,8 +42,8 @@ public class BookController {
 	}
 
 	@PutMapping("/books/{id}")
-	public ResponseEntity<Book> updateBook(@PathVariable(value = "id") Long bookId, @RequestBody Book bookRequest) {
-		Book book = bookRepository.findById(bookId).get();
+	public ResponseEntity<Book> updateBook(@PathVariable(value = "id") Long bookId, @RequestBody Book bookRequest) throws ResourceNotFoundException {
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 
 		book.setTitle(bookRequest.getTitle());
 		book.setAuthor(bookRequest.getAuthor());
@@ -54,8 +55,8 @@ public class BookController {
 	}
 
 	@DeleteMapping("/books/{id}")
-	public Map<String, Boolean> deleteBook(@PathVariable(value = "id") Long bookId) {
-		Book book = bookRepository.findById(bookId).get();
+	public Map<String, Boolean> deleteBook(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 
 		bookRepository.delete(book);
 		Map<String, Boolean> response = new HashMap<>();

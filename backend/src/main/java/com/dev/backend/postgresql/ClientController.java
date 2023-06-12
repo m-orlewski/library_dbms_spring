@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.dev.backend.model.Client;
 import com.dev.backend.ClientRepository;
+import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +31,8 @@ public class ClientController {
 	}
 
 	@GetMapping("/clients/{id}")
-	public ResponseEntity<Client> getClientById(@PathVariable(value = "id") Long clientId) {
-		Client client = clientRepository.findById(clientId).get();
+	public ResponseEntity<Client> getClientById(@PathVariable(value = "id") Long clientId) throws ResourceNotFoundException {
+		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 		return ResponseEntity.ok().body(client);
 	}
 
@@ -41,8 +42,8 @@ public class ClientController {
 	}
 
 	@PutMapping("/clients/{id}")
-	public ResponseEntity<Client> updateClient(@PathVariable(value = "id") Long clientId, @RequestBody Client clientRequest) {
-		Client client = clientRepository.findById(clientId).get();
+	public ResponseEntity<Client> updateClient(@PathVariable(value = "id") Long clientId, @RequestBody Client clientRequest) throws ResourceNotFoundException {
+		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 
 		client.setFirstName(clientRequest.getFirstName());
 		client.setLastName(clientRequest.getLastName());
@@ -52,8 +53,8 @@ public class ClientController {
 	}
 
 	@DeleteMapping("/clients/{id}")
-	public Map<String, Boolean> deleteClient(@PathVariable(value = "id") Long clientId) {
-		Client client = clientRepository.findById(clientId).get();
+	public Map<String, Boolean> deleteClient(@PathVariable(value = "id") Long clientId) throws ResourceNotFoundException {
+		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 
 		clientRepository.delete(client);
 		Map<String, Boolean> response = new HashMap<>();
