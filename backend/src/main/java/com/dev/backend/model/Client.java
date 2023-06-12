@@ -19,7 +19,7 @@ public class Client {
 	
 	public Client() {}
 	
-	public Client(String firstName, String lastName, String emailId) {
+	public Client(String firstName, String lastName) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}

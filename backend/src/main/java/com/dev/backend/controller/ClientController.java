@@ -1,14 +1,16 @@
-package com.dev.backend.postgresql;
+package com.dev.backend.controller;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.dev.backend.model.Book;
 import com.dev.backend.model.Client;
 import com.dev.backend.ClientRepository;
 import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +35,13 @@ public class ClientController {
 	@GetMapping("/clients/{id}")
 	public ResponseEntity<Client> getClientById(@PathVariable(value = "id") Long clientId) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
-		return ResponseEntity.ok().body(client);
+		return new ResponseEntity<Client>(client, HttpStatus.OK);
 	}
 
 	@PostMapping("/clients")
-	public Client createClient(@RequestBody Client client) {
-		return clientRepository.save(client);
+	public ResponseEntity<Client> createClient(@RequestBody Client client) {
+		clientRepository.save(client);
+		return new ResponseEntity<Client>(client, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/clients/{id}")
@@ -48,17 +51,15 @@ public class ClientController {
 		client.setFirstName(clientRequest.getFirstName());
 		client.setLastName(clientRequest.getLastName());
 		
-		final Client updatedClient = clientRepository.save(client);
-		return ResponseEntity.ok(updatedClient);
+		clientRepository.save(client);
+		return new ResponseEntity<Client>(client, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/clients/{id}")
-	public Map<String, Boolean> deleteClient(@PathVariable(value = "id") Long clientId) throws ResourceNotFoundException {
+	public ResponseEntity<HttpStatus> deleteClient(@PathVariable(value = "id") Long clientId) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 
 		clientRepository.delete(client);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return response;
+		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
 	}
 }

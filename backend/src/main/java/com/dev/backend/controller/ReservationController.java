@@ -1,4 +1,4 @@
-package com.dev.backend.postgresql;
+package com.dev.backend.controller;
 
 import java.util.HashMap;
 import java.util.List;

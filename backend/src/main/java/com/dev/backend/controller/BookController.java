@@ -1,14 +1,13 @@
-package com.dev.backend.postgresql;
+package com.dev.backend.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.dev.backend.model.Book;
 import com.dev.backend.BookRepository;
 import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +32,13 @@ public class BookController {
 	@GetMapping("/books/{id}")
 	public ResponseEntity<Book> getBookById(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
-		return ResponseEntity.ok().body(book);
+		return new ResponseEntity<Book>(book, HttpStatus.OK);
 	}
 
 	@PostMapping("/books")
-	public Book createBook(@RequestBody Book book) {
-		return bookRepository.save(book);
+	public ResponseEntity<Book> createBook(@RequestBody Book book) {
+		bookRepository.save(book);
+		return new ResponseEntity<Book>(book, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/books/{id}")
@@ -50,17 +50,15 @@ public class BookController {
         book.setGenre(bookRequest.getGenre());
 		book.setQuantity(bookRequest.getQuantity());
 		
-		final Book updatedBook = bookRepository.save(book);
-		return ResponseEntity.ok(updatedBook);
+		bookRepository.save(book);
+		return new ResponseEntity<Book>(book, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/books/{id}")
-	public Map<String, Boolean> deleteBook(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
+	public ResponseEntity<HttpStatus> deleteBook(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 
 		bookRepository.delete(book);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return response;
+		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
 	}
 }
