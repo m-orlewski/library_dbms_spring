@@ -20,13 +20,13 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.dev.backend.controller.BookController;
+import com.dev.backend.controller.ClientController;
 import com.dev.backend.exception.ResourceNotFoundException;
-import com.dev.backend.model.Book;
+import com.dev.backend.model.Client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebMvcTest(BookController.class)
-public class BookControllerTest {
+@WebMvcTest(ClientController.class)
+public class ClientControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -35,90 +35,90 @@ public class BookControllerTest {
     ObjectMapper mapper;
     
     @MockBean
-    BookRepository bookRepository;
+    ClientRepository clientRepository;
 
-    Book book1 = new Book("book1", "author1", "genre1", 1);
-    Book book2 = new Book("book2", "author2", "genre2", 2);
-    Book book3= new Book("book3", "author1", "genre1", 3);
+    Client client1 = new Client("fname1", "lname1");
+    Client client2 = new Client("fname1", "lname2");
+    Client client3 = new Client("fname1", "lname3");
 
     @Test
-    public void getAllBooks_success() throws Exception {
-        List<Book> records = new ArrayList<>(Arrays.asList(book1, book2, book3));
+    public void getAllClients_success() throws Exception {
+        List<Client> records = new ArrayList<>(Arrays.asList(client1, client2, client3));
         
-        Mockito.when(bookRepository.findAll()).thenReturn(records);
+        Mockito.when(clientRepository.findAll()).thenReturn(records);
         
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/books")
+                .get("/api/clients")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
-                .andExpect(jsonPath("$[0].title", is(book1.getTitle())))
-                .andExpect(jsonPath("$[1].title", is(book2.getTitle())))
-                .andExpect(jsonPath("$[2].title", is(book3.getTitle())));
+                .andExpect(jsonPath("$[0].firstName", is(client1.getFirstName())))
+                .andExpect(jsonPath("$[1].firstName", is(client2.getFirstName())))
+                .andExpect(jsonPath("$[2].firstName", is(client3.getFirstName())));
     }
 
     @Test
-    public void getBookById_success() throws Exception {      
-        Mockito.when(bookRepository.findById(book1.getId())).thenReturn(Optional.of(book1));
+    public void getClientById_success() throws Exception {      
+        Mockito.when(clientRepository.findById(client1.getId())).thenReturn(Optional.of(client1));
         
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/books/0")
+                .get("/api/clients/0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.title", is("book1")));
+                .andExpect(jsonPath("$.firstName", is(client1.getFirstName())));
     }
 
     @Test
-    public void getBookById_notFound() throws Exception {      
+    public void getClientById_notFound() throws Exception {      
         String exceptionParam = "not_found";
 
         mockMvc.perform(MockMvcRequestBuilders
-        .get("/api/books/1", exceptionParam)
+        .get("/api/clients/1", exceptionParam)
         .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResourceNotFoundException))
-        .andExpect(result -> assertEquals("Book not found for this id :: 1", result.getResolvedException().getMessage()));
+        .andExpect(result -> assertEquals("Client not found for this id :: 1", result.getResolvedException().getMessage()));
     }
 
     @Test
-    public void createBook_success() throws Exception {
-        Mockito.when(bookRepository.save(book1)).thenReturn(book1);
+    public void createClient_success() throws Exception {
+        Mockito.when(clientRepository.save(client1)).thenReturn(client1);
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/books")
-                .content(asJsonString(book1))
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/clients")
+                .content(asJsonString(client1))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title", is("book1")));
+                .andExpect(jsonPath("$.firstName", is(client1.getFirstName())));
     }
 
     @Test
-    public void updateBook_success() throws Exception {
+    public void updateClient_success() throws Exception {
 
-        Book updatedBook = new Book("updatedBook1", "updatedAuthor1", "updatedGenre1", 3);
+        Client updatedClient = new Client("updatedFName1", "updatedLName1");
 
-        Mockito.when(bookRepository.findById(book1.getId())).thenReturn(Optional.of(book1));
-        Mockito.when(bookRepository.save(updatedBook)).thenReturn(updatedBook);
+        Mockito.when(clientRepository.findById(client1.getId())).thenReturn(Optional.of(client1));
+        Mockito.when(clientRepository.save(updatedClient)).thenReturn(updatedClient);
 
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/books/{id}", 0)
-                .content(asJsonString(updatedBook))
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/clients/{id}", 0)
+                .content(asJsonString(updatedClient))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON);
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title", is("updatedBook1")));
+                .andExpect(jsonPath("$.firstName", is(updatedClient.getFirstName())));
     }
 
     @Test
     public void deleteRecord_success() throws Exception {
 
-        Mockito.when(bookRepository.findById(book1.getId())).thenReturn(Optional.of(book1));
+        Mockito.when(clientRepository.findById(client1.getId())).thenReturn(Optional.of(client1));
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/books/{id}", 0))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/clients/{id}", 0))
                     .andExpect(status().isAccepted());
     }
 
