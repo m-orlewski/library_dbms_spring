@@ -1,10 +1,7 @@
 package com.dev.backend.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.dev.backend.model.Book;
 import com.dev.backend.model.Client;
 import com.dev.backend.ClientRepository;
 import com.dev.backend.exception.ResourceNotFoundException;
@@ -21,29 +18,57 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Klasa definiująca endpointy dotyczące tabeli z książkami i ich zachowanie
+ */
 @RestController
 @RequestMapping("/api")
 public class ClientController {
+	/**
+	 * Repozytorium zawierające metody dostępu do danych i operacji na tabeli z klientami 
+	 */
 	@Autowired
 	private ClientRepository clientRepository;
 
+	/**
+	 * Endpoint GET zwracający listę wszystkich klientów z bazy danych
+	 * @return Lista klientów
+	 */
 	@GetMapping("/clients")
 	public List<Client> getAllClients() {
 		return clientRepository.findAll();
 	}
 
+	/**
+	 * Endpoint GET zwracający klienta o danym id
+	 * @param clientId Id szukanego klienta
+	 * @return Klient o danym id
+	 * @throws ResourceNotFoundException
+	 */
 	@GetMapping("/clients/{id}")
 	public ResponseEntity<Client> getClientById(@PathVariable(value = "id") int clientId) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 		return new ResponseEntity<Client>(client, HttpStatus.OK);
 	}
 
+	/**
+	 * Enpoint POST dodający klienta do bazy danych
+	 * @param client Klient który zostanie dodany do bazy danych
+	 * @return Klient dodany do bazy
+	 */
 	@PostMapping("/clients")
 	public ResponseEntity<Client> createClient(@RequestBody Client client) {
 		clientRepository.save(client);
 		return new ResponseEntity<Client>(client, HttpStatus.CREATED);
 	}
 
+	/**
+	 * Endpoint PUT modyfikujący klienta o danym id
+	 * @param clientId Id klienta do modyfikacji
+	 * @param clientRequest Nowe dane klienta
+	 * @return Zmodyfikowanu klient
+	 * @throws ResourceNotFoundException
+	 */
 	@PutMapping("/clients/{id}")
 	public ResponseEntity<Client> updateClient(@PathVariable(value = "id") int clientId, @RequestBody Client clientRequest) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
@@ -55,6 +80,11 @@ public class ClientController {
 		return new ResponseEntity<Client>(client, HttpStatus.OK);
 	}
 
+	/**
+	 * Endpoint DELETE usuwający klienta o zadanym id
+	 * @param clientId Id klienta który ma zostać usunięty
+	 * @throws ResourceNotFoundException
+	 */
 	@DeleteMapping("/clients/{id}")
 	public ResponseEntity<HttpStatus> deleteClient(@PathVariable(value = "id") int clientId) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));

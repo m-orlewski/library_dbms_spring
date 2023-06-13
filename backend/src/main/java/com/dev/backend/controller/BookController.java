@@ -18,29 +18,57 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Klasa definiująca endpointy dotyczące tabeli z książkami i ich zachowanie 
+ */
 @RestController
 @RequestMapping("/api")
 public class BookController {
+	/**
+	 * Repozytorium zawierające metody dostępu do danych i operacji na tabeli z książkami 
+	 */
 	@Autowired
 	private BookRepository bookRepository;
 
+	/**
+	 * Endpoint GET zwracający listę wszystkich książek z bazy danych
+	 * @return Lista książek
+	 */
 	@GetMapping("/books")
 	public List<Book> getAllBooks() {
 		return bookRepository.findAll();
 	}
 
+	/**
+	 * Endpoint GET zwracający książkę o danym id
+	 * @param bookId Id szukanej książki
+	 * @return Książka o danym id
+	 * @throws ResourceNotFoundException
+	 */
 	@GetMapping("/books/{id}")
 	public ResponseEntity<Book> getBookById(@PathVariable(value = "id") int bookId) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 		return new ResponseEntity<Book>(book, HttpStatus.OK);
 	}
 
+	/**
+	 * Enpoint POST dodający książkę do bazy danych
+	 * @param book Książka która zostanie dodana do bazy danych
+	 * @return Książka dodana do bazy
+	 */
 	@PostMapping("/books")
 	public ResponseEntity<Book> createBook(@RequestBody Book book) {
 		bookRepository.save(book);
 		return new ResponseEntity<Book>(book, HttpStatus.CREATED);
 	}
 
+	/**
+	 * Endpoint PUT modyfikujący książkę o danym id
+	 * @param bookId Id książki do modyfikacji
+	 * @param bookRequest Nowe dane książki
+	 * @return Zmodyfikowana książka
+	 * @throws ResourceNotFoundException
+	 */
 	@PutMapping("/books/{id}")
 	public ResponseEntity<Book> updateBook(@PathVariable(value = "id") int bookId, @RequestBody Book bookRequest) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
@@ -54,6 +82,11 @@ public class BookController {
 		return new ResponseEntity<Book>(book, HttpStatus.OK);
 	}
 
+	/**
+	 * Endpoint DELETE usuwający książkę o zadanym id
+	 * @param bookId Id książki która ma zostać usunięta
+	 * @throws ResourceNotFoundException
+	 */
 	@DeleteMapping("/books/{id}")
 	public ResponseEntity<HttpStatus> deleteBook(@PathVariable(value = "id") int bookId) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));

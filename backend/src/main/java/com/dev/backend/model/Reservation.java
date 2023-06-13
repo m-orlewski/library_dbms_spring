@@ -3,27 +3,48 @@ package com.dev.backend.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+/**
+ * Klasa reprezentująca rezerwację w bazie danych
+ */
 @Entity
 @Table(name = "reservations")
 public class Reservation {
 
+	/**
+	 * Id rezerwacji
+	 */
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
+	/**
+	 * Status rezerwacji: 0 - , 1 - 
+	 */
 	@Column(name = "status", nullable = false)
 	private int status;
 
+	/**
+	 * Data rezerwacji
+	 */
 	@Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
+	/**
+	 * Data zwrotu
+	 */
 	@Column(name = "return_date", nullable = false)
     private LocalDate returnDate;
 
+	/**
+	 * Książka której dotyczy rezerwacja
+	 */
     @OneToOne
     @JoinColumn(name = "book_id")
     private Book book;
 
+	/**
+	 * Klient którego dotyczy rezerwacja
+	 */
     @OneToOne
     @JoinColumn(name = "client_id")
     private Client client;

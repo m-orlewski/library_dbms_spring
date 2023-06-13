@@ -2,18 +2,30 @@ package com.dev.backend.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Klasa reprezentująca klienta w bazie danych
+ */
 @Entity
 @Table(name = "clients")
 public class Client {
 
+	/**
+	 * Id klienta
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 	
+	/**
+	 * Imię klienta
+	 */
 	@Column(name = "first_name", nullable = false)
 	private String firstName;
 	
+	/**
+	 * Nazwisko klienta
+	 */
 	@Column(name = "last_name", nullable = false)
 	private String lastName;
 	

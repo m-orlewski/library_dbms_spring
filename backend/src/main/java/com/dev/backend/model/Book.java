@@ -2,26 +2,45 @@ package com.dev.backend.model;
 
 import jakarta.persistence.*;
 
+/**
+ * Klasa reprezentująca książkę w bazie danych
+ */
 @Entity
 @Table(name = "books")
 public class Book {
 
+	/**
+	 * Id książki
+	 */
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 
+	/**
+	 * Tytuł książki
+	 */
 	@Column(name = "title", nullable = false)
 	private String title;
 
+	/**
+	 * Imię i nazwisko autora książki
+	 */
 	@Column(name = "author", nullable = false)
     private String author;
 
+	/**
+	 * Nazwa gatunku książki
+	 */
 	@Column(name = "genre", nullable = false)
     private String genre;
 
-	 @Column(name = "quantity", nullable = false)
+	/**
+	 * Ilość egzemplarzy
+	 */
+	@Column(name = "quantity", nullable = false)
     private int quantity;
+	
 	
 	public Book() {}
 	
