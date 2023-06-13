@@ -7,12 +7,16 @@ import java.util.Map;
 import com.dev.backend.model.Book;
 import com.dev.backend.model.Client;
 import com.dev.backend.model.Reservation;
+
+import io.micrometer.core.ipc.http.HttpSender.Response;
+
 import com.dev.backend.BookRepository;
 import com.dev.backend.ClientRepository;
 import com.dev.backend.ReservationRepository;
 import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,13 +45,13 @@ public class ReservationController {
 	}
 
 	@GetMapping("/reservations/{id}")
-	public ResponseEntity<Reservation> getReservationById(@PathVariable(value = "id") Long reservationId) throws ResourceNotFoundException {
+	public ResponseEntity<Reservation> getReservationById(@PathVariable(value = "id") int reservationId) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
-		return ResponseEntity.ok().body(reservation);
+		return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
 	}
 
 	@PostMapping("/reservations")
-	public Reservation createReservation(@RequestBody Reservation reservationRequest) {
+	public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservationRequest) {
 		Reservation reservation = new Reservation();
 
         reservation.setStatus(reservationRequest.getStatus());
@@ -60,11 +64,13 @@ public class ReservationController {
         reservation.setBook(book);
         reservation.setClient(client);
 
-        return reservationRepository.save(reservation);
+		reservationRepository.save(reservation);
+
+        return new ResponseEntity<Reservation>(reservation, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/reservations/{id}")
-	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") Long reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
+	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") int reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
         reservation.setStatus(reservationRequest.getStatus());
@@ -73,17 +79,15 @@ public class ReservationController {
         reservation.setBook(reservationRequest.getBook());
         reservation.setClient(reservationRequest.getClient());
 
-		final Reservation updatedReservation = reservationRepository.save(reservation);
-        return ResponseEntity.ok().body(updatedReservation);
+		reservationRepository.save(reservation);
+        return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
 	}
 
 	@DeleteMapping("/reservations/{id}")
-	public Map<String, Boolean> deleteReservation(@PathVariable(value = "id") Long reservationId) throws ResourceNotFoundException {
+	public ResponseEntity<HttpStatus> deleteReservation(@PathVariable(value = "id") int reservationId) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
 		reservationRepository.delete(reservation);
-		Map<String, Boolean> response = new HashMap<>();
-		response.put("deleted", Boolean.TRUE);
-		return response;
+		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
 	}
 }

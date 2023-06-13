@@ -30,7 +30,7 @@ public class BookController {
 	}
 
 	@GetMapping("/books/{id}")
-	public ResponseEntity<Book> getBookById(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
+	public ResponseEntity<Book> getBookById(@PathVariable(value = "id") int bookId) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 		return new ResponseEntity<Book>(book, HttpStatus.OK);
 	}
@@ -42,7 +42,7 @@ public class BookController {
 	}
 
 	@PutMapping("/books/{id}")
-	public ResponseEntity<Book> updateBook(@PathVariable(value = "id") Long bookId, @RequestBody Book bookRequest) throws ResourceNotFoundException {
+	public ResponseEntity<Book> updateBook(@PathVariable(value = "id") int bookId, @RequestBody Book bookRequest) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 
 		book.setTitle(bookRequest.getTitle());
@@ -55,7 +55,7 @@ public class BookController {
 	}
 
 	@DeleteMapping("/books/{id}")
-	public ResponseEntity<HttpStatus> deleteBook(@PathVariable(value = "id") Long bookId) throws ResourceNotFoundException {
+	public ResponseEntity<HttpStatus> deleteBook(@PathVariable(value = "id") int bookId) throws ResourceNotFoundException {
 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new ResourceNotFoundException("Book not found for this id :: " + bookId));
 
 		bookRepository.delete(book);

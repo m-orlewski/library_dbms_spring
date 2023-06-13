@@ -43,9 +43,9 @@ public class BookControllerTest {
 
     @Test
     public void getAllBooks_success() throws Exception {
-        List<Book> records = new ArrayList<>(Arrays.asList(book1, book2, book3));
+        List<Book> books = new ArrayList<>(Arrays.asList(book1, book2, book3));
         
-        Mockito.when(bookRepository.findAll()).thenReturn(records);
+        Mockito.when(bookRepository.findAll()).thenReturn(books);
         
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/books")
@@ -114,7 +114,7 @@ public class BookControllerTest {
     }
 
     @Test
-    public void deleteRecord_success() throws Exception {
+    public void deleteBook_success() throws Exception {
 
         Mockito.when(bookRepository.findById(book1.getId())).thenReturn(Optional.of(book1));
 

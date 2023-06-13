@@ -43,9 +43,9 @@ public class ClientControllerTest {
 
     @Test
     public void getAllClients_success() throws Exception {
-        List<Client> records = new ArrayList<>(Arrays.asList(client1, client2, client3));
+        List<Client> clients = new ArrayList<>(Arrays.asList(client1, client2, client3));
         
-        Mockito.when(clientRepository.findAll()).thenReturn(records);
+        Mockito.when(clientRepository.findAll()).thenReturn(clients);
         
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/clients")
@@ -114,7 +114,7 @@ public class ClientControllerTest {
     }
 
     @Test
-    public void deleteRecord_success() throws Exception {
+    public void deleteClient_success() throws Exception {
 
         Mockito.when(clientRepository.findById(client1.getId())).thenReturn(Optional.of(client1));
 
