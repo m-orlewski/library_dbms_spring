@@ -9,6 +9,7 @@ import com.dev.backend.model.Reservation;
 import com.dev.backend.BookRepository;
 import com.dev.backend.ClientRepository;
 import com.dev.backend.ReservationRepository;
+import com.dev.backend.annotation.LogExecutionTime;
 import com.dev.backend.exception.ResourceNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ public class ReservationController {
 	 * @return Lista rezerwacji
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "/reservations")
+	@LogExecutionTime
 	public ResponseEntity<List<Reservation>> getAllReservations() {
 		List<Reservation> reservations = reservationRepository.findAll();
 		return new ResponseEntity<List<Reservation>>(reservations, HttpStatus.OK);
@@ -65,6 +67,7 @@ public class ReservationController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "/reservations/{id}")
+	@LogExecutionTime
 	public ResponseEntity<Reservation> getReservationById(@PathVariable(value = "id") int reservationId) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 		return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
@@ -76,6 +79,7 @@ public class ReservationController {
 	 * @return Rezerwacja dodana do bazy
 	 */
 	@RequestMapping(method = RequestMethod.POST, path = "/reservations")
+	@LogExecutionTime
 	public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservationRequest) {
 		Reservation reservation = new Reservation();
 
@@ -102,6 +106,7 @@ public class ReservationController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(method = RequestMethod.PUT, path = "/reservations/{id}")
+	@LogExecutionTime
 	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") int reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
@@ -121,6 +126,7 @@ public class ReservationController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(method = RequestMethod.DELETE, path = "/reservations/{id}")
+	@LogExecutionTime
 	public ResponseEntity<HttpStatus> deleteReservation(@PathVariable(value = "id") int reservationId) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
