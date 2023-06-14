@@ -2,6 +2,7 @@ package com.dev.backend.controller;
 
 import java.util.List;
 
+import com.dev.backend.model.Book;
 import com.dev.backend.model.Client;
 import com.dev.backend.ClientRepository;
 import com.dev.backend.exception.ResourceNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -34,9 +36,10 @@ public class ClientController {
 	 * Endpoint GET zwracający listę wszystkich klientów z bazy danych
 	 * @return Lista klientów
 	 */
-	@GetMapping("/clients")
-	public List<Client> getAllClients() {
-		return clientRepository.findAll();
+	@RequestMapping(method = RequestMethod.GET, path = "/clients")
+	public ResponseEntity<List<Client>> getAllClients() {
+		List<Client> clients = clientRepository.findAll();
+		return new ResponseEntity<List<Client>>(clients, HttpStatus.OK);
 	}
 
 	/**
@@ -45,7 +48,7 @@ public class ClientController {
 	 * @return Klient o danym id
 	 * @throws ResourceNotFoundException
 	 */
-	@GetMapping("/clients/{id}")
+	@RequestMapping(method = RequestMethod.GET, path = "/clients/{id}")
 	public ResponseEntity<Client> getClientById(@PathVariable(value = "id") int clientId) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 		return new ResponseEntity<Client>(client, HttpStatus.OK);
@@ -56,7 +59,7 @@ public class ClientController {
 	 * @param client Klient który zostanie dodany do bazy danych
 	 * @return Klient dodany do bazy
 	 */
-	@PostMapping("/clients")
+	@RequestMapping(method = RequestMethod.POST, path = "/clients")
 	public ResponseEntity<Client> createClient(@RequestBody Client client) {
 		clientRepository.save(client);
 		return new ResponseEntity<Client>(client, HttpStatus.CREATED);
@@ -69,7 +72,7 @@ public class ClientController {
 	 * @return Zmodyfikowanu klient
 	 * @throws ResourceNotFoundException
 	 */
-	@PutMapping("/clients/{id}")
+	@RequestMapping(method = RequestMethod.PUT, path = "/clients/{id}")
 	public ResponseEntity<Client> updateClient(@PathVariable(value = "id") int clientId, @RequestBody Client clientRequest) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 
@@ -85,7 +88,7 @@ public class ClientController {
 	 * @param clientId Id klienta który ma zostać usunięty
 	 * @throws ResourceNotFoundException
 	 */
-	@DeleteMapping("/clients/{id}")
+	@RequestMapping(method = RequestMethod.DELETE, path = "/clients/{id}")
 	public ResponseEntity<HttpStatus> deleteClient(@PathVariable(value = "id") int clientId) throws ResourceNotFoundException {
 		Client client = clientRepository.findById(clientId).orElseThrow(() -> new ResourceNotFoundException("Client not found for this id :: " + clientId));
 

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -51,9 +52,10 @@ public class ReservationController {
 	 * Endpoint GET zwracający listę wszystkich rezerwacji z bazy danych
 	 * @return Lista rezerwacji
 	 */
-	@GetMapping("/reservations")
-	public List<Reservation> getAllReservations() {
-		return reservationRepository.findAll();
+	@RequestMapping(method = RequestMethod.GET, path = "/reservations")
+	public ResponseEntity<List<Reservation>> getAllReservations() {
+		List<Reservation> reservations = reservationRepository.findAll();
+		return new ResponseEntity<List<Reservation>>(reservations, HttpStatus.OK);
 	}
 
 	/**
@@ -62,7 +64,7 @@ public class ReservationController {
 	 * @return Rezerwacja o danym id
 	 * @throws ResourceNotFoundException
 	 */
-	@GetMapping("/reservations/{id}")
+	@RequestMapping(method = RequestMethod.GET, path = "/reservations/{id}")
 	public ResponseEntity<Reservation> getReservationById(@PathVariable(value = "id") int reservationId) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 		return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
@@ -73,7 +75,7 @@ public class ReservationController {
 	 * @param reservation Rezerwacja która zostanie dodana do bazy danych
 	 * @return Rezerwacja dodana do bazy
 	 */
-	@PostMapping("/reservations")
+	@RequestMapping(method = RequestMethod.POST, path = "/reservations")
 	public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservationRequest) {
 		Reservation reservation = new Reservation();
 
@@ -99,7 +101,7 @@ public class ReservationController {
 	 * @return Zmodyfikowana rezerwacja
 	 * @throws ResourceNotFoundException
 	 */
-	@PutMapping("/reservations/{id}")
+	@RequestMapping(method = RequestMethod.PUT, path = "/reservations/{id}")
 	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") int reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
@@ -118,7 +120,7 @@ public class ReservationController {
 	 * @param reservationId Id rezerwacji która ma zostać usunięta
 	 * @throws ResourceNotFoundException
 	 */
-	@DeleteMapping("/reservations/{id}")
+	@RequestMapping(method = RequestMethod.DELETE, path = "/reservations/{id}")
 	public ResponseEntity<HttpStatus> deleteReservation(@PathVariable(value = "id") int reservationId) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
