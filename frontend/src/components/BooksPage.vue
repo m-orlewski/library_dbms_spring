@@ -2,6 +2,10 @@
     <div>
         <h2>Lista książek</h2>
 
+        <b-alert v-model="showSuccessAlert" variant="success" dismissible>
+            {{ alertMessage }}
+        </b-alert>
+
         <b-button block id="show-btn" @click="showCreateModal">
             <b-icon-plus class="text-white"></b-icon-plus>
             <span class="h6 text-white">Dodaj książkę</span>
@@ -13,6 +17,10 @@
               <b-button size="sm" variant="danger" @click="showDeleteModal(data.item.id)" class="mx-1">Usuń</b-button>
         </template>
         </b-table>
+    
+        <b-modal ref="create-book-modal" size="xl" hide-footer title="Nowa książka">
+            <create-book-form @closeCreateModal="closeCreateModal" @reloadDataTable="getBooksData" @showSuccessAlert="showAlertCreate"></create-book-form>
+        </b-modal>
     </div>
 </template>
   
@@ -20,9 +28,14 @@
 
 import axios from 'axios';
 
+import CreateBookForm from '@/components/CreateBookForm.vue';
+
 let BOOKS_API_URL = 'http://localhost:8085/api/books';
 
 export default {
+    components: {
+        CreateBookForm,
+    },
     data() {
         return {
             fields: [
@@ -52,10 +65,13 @@ export default {
                     key: 'actions',
                 }],
             books: [],
+            showSuccessAlert: false,
+            alertMessage: '',
         };
     },
     methods: {
-        fetchBooks() {
+        getBooksData() {
+            console.log('getBooksData');
             axios.get(BOOKS_API_URL)
             .then((response) => {
                 this.books = response.data;
@@ -65,7 +81,16 @@ export default {
             })
         },
         showCreateModal() {
-            console.log('Create Form');
+            console.log('Create Form Opened');
+            this.$refs["create-book-modal"].show();
+        },
+        closeCreateModal() {
+            console.log('Create Form Closed');
+            this.$refs["create-book-modal"].hide();
+        },
+        showAlertCreate() {
+            this.showSuccessAlert = true;
+            this.alertMessage = "Książka dodana do bazy";
         },
         showUpdateModal(id) {
             console.log('Update element with id=' + id);
@@ -75,7 +100,7 @@ export default {
         },
     },
     created() {
-        this.fetchBooks()
+        this.getBooksData()
     }
 }
 </script>
