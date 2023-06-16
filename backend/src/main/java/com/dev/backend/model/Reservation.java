@@ -91,7 +91,7 @@ public class Reservation {
 		return book;
 	}
 
-	public int getBookId() {
+	public int bookId() {
 		return book.getId();
 	}
 
@@ -103,7 +103,7 @@ public class Reservation {
 		return client;
 	}
 
-	public int getClientId() {
+	public int clientId() {
 		return client.getId();
 	}
 
