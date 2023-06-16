@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Klasa definiująca endpointy dotyczące tabeli z książkami i ich zachowanie 
  */
-@RestController
 @CrossOrigin
+@RestController
 @RequestMapping("/api")
 public class BookController {
 	/**
@@ -34,7 +34,6 @@ public class BookController {
 	 * Endpoint GET zwracający listę wszystkich książek z bazy danych
 	 * @return Lista książek
 	 */
-	// @GetMapping("/books")
 	@RequestMapping(method = RequestMethod.GET, path = "/books")
 	@LogExecutionTime
 	public ResponseEntity<List<Book>> getAllBooks() {
