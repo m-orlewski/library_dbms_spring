@@ -21,6 +21,14 @@
         <b-modal ref="create-book-modal" size="xl" hide-footer title="Nowa książka">
             <create-book-form @closeCreateModal="closeCreateModal" @reloadDataTable="getBooksData" @showSuccessAlert="showAlertCreate"></create-book-form>
         </b-modal>
+
+        <b-modal ref="update-book-modal" size="xl" hide-footer title="Edytuj książkę">
+            <update-book-form @closeUpdateModal="closeUpdateModal" @reloadDataTable="getBooksData" @showSuccessAlert="showAlertUpdate" :bookId="bookId"></update-book-form>
+        </b-modal>
+
+        <b-modal ref="delete-book-modal" size="md" hide-footer title="Potwierdź usunięcie książki">
+            <delete-book-modal @closeDeleteModal="closeDeleteModal" @reloadDataTable="getBooksData" @showSuccessAlert="showAlertDelete" :bookId="bookId"></delete-book-modal>
+        </b-modal>
     </div>
 </template>
   
@@ -29,12 +37,14 @@
 import axios from 'axios';
 
 import CreateBookForm from '@/components/CreateBookForm.vue';
-
-let BOOKS_API_URL = 'http://localhost:8085/api/books';
+import UpdateBookForm from '@/components/UpdateBookForm.vue';
+import DeleteBookModal from '@/components/DeleteBookModal.vue';
 
 export default {
     components: {
         CreateBookForm,
+        UpdateBookForm,
+        DeleteBookModal,
     },
     data() {
         return {
@@ -65,6 +75,7 @@ export default {
                     key: 'actions',
                 }],
             books: [],
+            bookId: Number,
             showSuccessAlert: false,
             alertMessage: '',
         };
@@ -72,7 +83,7 @@ export default {
     methods: {
         getBooksData() {
             console.log('getBooksData');
-            axios.get(BOOKS_API_URL)
+            axios.get(this.API_URL + '/books')
             .then((response) => {
                 this.books = response.data;
             })
@@ -93,11 +104,31 @@ export default {
             this.alertMessage = "Książka dodana do bazy";
         },
         showUpdateModal(id) {
-            console.log('Update element with id=' + id);
+            console.log('Update Form Opened for id=' + id);
+            this.bookId = id;
+            this.$refs["update-book-modal"].show();
+        },
+        closeUpdateModal() {
+            console.log('Update Form Closed');
+            this.$refs["update-book-modal"].hide();
+        },
+        showAlertUpdate() {
+            this.showSuccessAlert = true;
+            this.alertMessage = "Zaktualizowano książkę";
         },
         showDeleteModal(id) {
-            console.log('Delete element with id=' + id);
+            console.log('Delete Form Opened for id=' + id);
+            this.bookId = id;
+            this.$refs["delete-book-modal"].show();
         },
+        closeDeleteModal() {
+            console.log('Delete Form Closed');
+            this.$refs["delete-book-modal"].hide();
+        },
+        showAlertDelete() {
+            this.showSuccessAlert = true;
+            this.alertMessage = "Usunięto książkę";
+        }
     },
     created() {
         this.getBooksData()

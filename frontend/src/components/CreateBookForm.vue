@@ -46,7 +46,7 @@
     </b-row>
     <b-row class="mt-4">
       <b-col>
-        <b-button variant="warning" @click="triggerClose">Close</b-button>
+        <b-button variant="warning" @click="triggerClose">Zamknij</b-button>
       </b-col>
       <b-col cols="3">
         <b-button variant="primary" class="px-5" @click="addNewBook">Dodaj książkę</b-button>
@@ -71,9 +71,9 @@ export default {
     },
     addNewBook() {
         console.log('addNewBook');
-        axios.post("http://localhost:8085/api/books", this.book)
+        axios.post(this.API_URL + '/books', this.book)
             .then((response) => {
-            console.log(response.data);
+                console.log(response.data);
                 this.$emit("closeCreateModal");
                 this.$emit("reloadDataTable");
                 this.$emit("showSuccessAlert");
