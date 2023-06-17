@@ -1,5 +1,13 @@
 <template>
-  <b-form class="mt-3" @submit="addNewReservation">
+  <b-form class="mt-3" @submit="onSubmit">
+
+    <p v-if="errors.length">
+    <b>Błąd:</b>
+    <ul>
+      <li v-for="error in errors" :key="error">{{ error }}</li>
+    </ul>
+    </p>
+
     <b-row>
       <b-col cols="6">
         <b-form-group id="status" label="Status rezerwacji" label-for="status">
@@ -83,7 +91,8 @@ export default {
             books: {},
             clients: {},
             bookId: Number,
-            clientId: Number
+            clientId: Number,
+            errors: [],
         };
     },
     mounted() {
@@ -102,7 +111,7 @@ export default {
 
         axios.post(this.API_URL + '/reservations', this.reservation)
             .then((response) => {
-                console.log(response.data);
+                console.log(response.status);
                 this.$emit("closeCreateModal");
                 this.$emit("reloadDataTable");
                 this.$emit("showSuccessAlert");
@@ -150,6 +159,19 @@ export default {
         .catch((error) => {
             console.log(error);
         })
+    },
+    onSubmit(e) {
+      this.errors = [];
+      const dueDate = new Date(this.reservation.dueDate);
+      const returnDate = new Date(this.reservation.returnDate);
+
+      if (dueDate < returnDate) {
+        this.addNewReservation();
+      }
+      else {
+        this.errors.push("Data zwrotu nie może być późniejsza niż data rezerwacji");
+        e.preventDefault();
+      }
     }
     }
 };

@@ -1,5 +1,13 @@
 <template>
-    <b-form class="mt-3">
+    <b-form class="mt-3" @submit="onSubmit">
+
+      <p v-if="errors.length">
+      <b>Błąd:</b>
+      <ul>
+        <li v-for="error in errors" :key="error">{{ error }}</li>
+      </ul>
+      </p>
+
       <b-row>
         <b-col cols="6">
           <b-form-group id="status" label="Status rezerwacji" label-for="status">
@@ -8,6 +16,7 @@
               type="text"
               placeholder="Status rezerwacji"
               v-model="reservation.status"
+              required
             ></b-form-input>
           </b-form-group>
         </b-col>
@@ -19,6 +28,7 @@
               id="dueDate"
               type="date"
               v-model="reservation.dueDate"
+              required
             ></b-form-input>
           </b-form-group>
         </b-col>
@@ -28,6 +38,7 @@
               id="returnDate"
               type="date"
               v-model="reservation.returnDate"
+              required
             ></b-form-input>
           </b-form-group>
         </b-col>
@@ -61,7 +72,7 @@
           <b-button variant="warning" @click="triggerClose">Zamknij</b-button>
         </b-col>
         <b-col cols="3">
-          <b-button variant="primary" class="px-5" @click="updateReservation">Edytuj rezerwację</b-button>
+          <b-button type='submit' variant="primary" class="px-5">Edytuj rezerwację</b-button>
         </b-col>
       </b-row>
     </b-form>
@@ -81,7 +92,8 @@
             books: {},
             clients: {},
             bookId: Number,
-            clientId: Number
+            clientId: Number,
+            errors: [],
           };
       },
       mounted() {
@@ -106,9 +118,10 @@
                   });
           },
           updateReservation() {
-              console.log('updateReservation');
-              this.reservation.book = this.books.find(x => x.id = this.bookId);
-              this.reservation.client = this.clients.find(x => x.id = this.clientId);
+              
+              this.reservation.book = this.books.find(x => x.id == this.bookId);
+              this.reservation.client = this.clients.find(x => x.id == this.clientId);
+              console.log('updateReservation with ' + this.reservation);
               axios.put(this.API_URL + '/reservations/' + this.reservationId, this.reservation)
                   .then((response) => {
                       console.log(response);
@@ -159,6 +172,19 @@
                 .catch((error) => {
                     console.log(error);
                 })
+          },
+          onSubmit(e) {
+            this.errors = [];
+            const dueDate = new Date(this.reservation.dueDate);
+            const returnDate = new Date(this.reservation.returnDate);
+
+            if (dueDate < returnDate) {
+              this.updateReservation();
+            }
+            else {
+              this.errors.push("Data zwrotu nie może być późniejsza niż data rezerwacji");
+              e.preventDefault();
+            }
           }
       },
   };
