@@ -1,13 +1,14 @@
 <template>
-  <b-form class="mt-3">
+  <b-form class="mt-3" @submit="addNewReservation">
     <b-row>
       <b-col cols="6">
         <b-form-group id="status" label="Status rezerwacji" label-for="status">
           <b-form-input
             id="status"
-            type="text"
+            type="number"
             placeholder="Status rezerwacji"
             v-model="reservation.status"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -19,6 +20,7 @@
             id="dueDate"
             type="date"
             v-model="reservation.dueDate"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -28,6 +30,7 @@
             id="returnDate"
             type="date"
             v-model="reservation.returnDate"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -63,7 +66,7 @@
         <b-button variant="warning" @click="triggerClose">Zamknij</b-button>
       </b-col>
       <b-col cols="3">
-        <b-button variant="primary" class="px-5" @click="addNewReservation">Dodaj rezerwację</b-button>
+        <b-button type='submit' variant="primary" class="px-5">Dodaj rezerwację</b-button>
       </b-col>
     </b-row>
   </b-form>
