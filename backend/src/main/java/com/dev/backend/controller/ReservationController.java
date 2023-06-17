@@ -74,11 +74,11 @@ public class ReservationController {
 	/**
 	 * Enpoint POST dodający rezerwację do bazy danych
 	 * @param reservation Rezerwacja która zostanie dodana do bazy danych
-	 * @return Rezerwacja dodana do bazy
+	 * @return Obiekt klasy ErrorResponse z opcjonalnym błędem
 	 */
 	@RequestMapping(method = RequestMethod.POST, path = "/reservations")
 	@LogExecutionTime
-	public ResponseEntity<Reservation> createReservation(@RequestBody Reservation reservationRequest) {
+	public ResponseEntity<String> createReservation(@RequestBody Reservation reservationRequest) {
 		Reservation reservation = new Reservation();
 
         reservation.setStatus(reservationRequest.getStatus());
@@ -91,21 +91,25 @@ public class ReservationController {
         reservation.setBook(book);
         reservation.setClient(client);
 
-		reservationRepository.save(reservation);
-
-        return new ResponseEntity<Reservation>(reservation, HttpStatus.CREATED);
+		if (isReservationValid(reservation)) {
+			reservationRepository.save(reservation);
+			return ResponseEntity.status(HttpStatus.CREATED).build();
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("The reservation dates overlap with existing reservations");
+		}
 	}
 
 	/**
 	 * Endpoint PUT modyfikujący rezerwację o danym id
 	 * @param reservationId Id rezerwacji do modyfikacji
 	 * @param reservationRequest Nowe dane rezerwacji
-	 * @return Zmodyfikowana rezerwacja
+	 * @return Obiekt klasy ErrorResponse z opcjonalnym błędem
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(method = RequestMethod.PUT, path = "/reservations/{id}")
 	@LogExecutionTime
-	public ResponseEntity<Reservation> updateReservation(@PathVariable(value = "id") int reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
+	public ResponseEntity<String> updateReservation(@PathVariable(value = "id") int reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
         reservation.setStatus(reservationRequest.getStatus());
@@ -114,8 +118,13 @@ public class ReservationController {
         reservation.setBook(reservationRequest.getBook());
         reservation.setClient(reservationRequest.getClient());
 
-		reservationRepository.save(reservation);
-        return new ResponseEntity<Reservation>(reservation, HttpStatus.OK);
+		if (isReservationValid(reservation)) {
+			reservationRepository.save(reservation);
+			return ResponseEntity.status(HttpStatus.OK).build();
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("The reservation dates overlap with existing reservations");
+		}
 	}
 
 	/**
@@ -130,5 +139,34 @@ public class ReservationController {
 
 		reservationRepository.delete(reservation);
 		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
+	}
+
+	public boolean isReservationValid(Reservation reservation) {
+		// lista rezerwacji na daną ksiażkę z wykluczeniem rezerwacji którą dodajemy/edytujemy
+		System.out.println("***** isReservationValid for " + reservation);
+		List<Reservation> currentReservations = reservationRepository.findByBookAndIdNot(reservation.getBook(), reservation.getId());
+
+		if (currentReservations.size() < reservation.getBook().getQuantity()) {
+			System.out.println("***** Reservation is valid because " + currentReservations.size() + " < " + reservation.getBook().getQuantity());
+			return true; // dostępny egzemplarz bez rezerwacji
+		}
+
+		// rezerwacji jest więcej niż egzemplarzy - sprawdzić czy daty na siebie nie nachodzą
+		boolean datesOverlap = true;
+		for (Reservation currentReservation : currentReservations) {
+			if (reservation.getReturnDate().isBefore(currentReservation.getDueDate()) ||
+				reservation.getDueDate().isAfter(currentReservation.getReturnDate())) {
+					datesOverlap = false;
+					break;
+				}
+		}
+
+		if (datesOverlap) {
+			System.out.println("***** Reservation is NOT valid because datesOverlap = true");
+			return false; // nowa rezerwacja koliduje z obecnymi
+		}
+
+		System.out.println("***** Reservation is valid because datesOverlap = false");
+		return true; // nowa rezerwacja nie koliduje z obecnymi
 	}
 }
