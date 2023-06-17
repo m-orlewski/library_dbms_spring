@@ -1,5 +1,5 @@
 <template>
-  <b-form class="mt-3">
+  <b-form class="mt-3" @submit="addNewBook">
     <b-row>
       <b-col cols="6">
         <b-form-group id="title" label="Tytuł" label-for="title">
@@ -8,6 +8,7 @@
             type="text"
             placeholder="Tytuł"
             v-model="book.title"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -18,6 +19,7 @@
             type="text"
             placeholder="Autor"
             v-model="book.author"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -30,6 +32,7 @@
             type="text"
             placeholder="Gatunek"
             v-model="book.genre"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -38,8 +41,10 @@
           <b-form-input
             id="quantity"
             type="number"
+            min=1
             placeholder="Ilość egzemplarzy"
             v-model="book.quantity"
+            required
           ></b-form-input>
         </b-form-group>
       </b-col>
@@ -49,7 +54,7 @@
         <b-button variant="warning" @click="triggerClose">Zamknij</b-button>
       </b-col>
       <b-col cols="3">
-        <b-button variant="primary" class="px-5" @click="addNewBook">Dodaj książkę</b-button>
+        <b-button type='submit' variant="primary" class="px-5">Dodaj książkę</b-button>
       </b-col>
     </b-row>
   </b-form>
@@ -63,6 +68,7 @@ export default {
   data() {
     return {
       book: {},
+      errorMessage: '',
     };
   },
   methods: {
@@ -71,6 +77,7 @@ export default {
     },
     addNewBook() {
         console.log('addNewBook');
+
         axios.post(this.API_URL + '/books', this.book)
             .then((response) => {
                 console.log(response.data);
@@ -81,7 +88,7 @@ export default {
             .catch((error) => {
                 console.log(error);
             });
-    },
+    }
 },
 };
 </script>
