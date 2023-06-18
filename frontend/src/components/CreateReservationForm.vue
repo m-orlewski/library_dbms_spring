@@ -7,20 +7,7 @@
       <li v-for="error in errors" :key="error">{{ error }}</li>
     </ul>
     </p>
-
-    <b-row>
-      <b-col cols="6">
-        <b-form-group id="status" label="Status rezerwacji" label-for="status">
-          <b-form-input
-            id="status"
-            type="number"
-            placeholder="Status rezerwacji"
-            v-model="reservation.status"
-            required
-          ></b-form-input>
-        </b-form-group>
-      </b-col>
-    </b-row>
+    
     <b-row class="mt-3">
       <b-col cols="6">
         <b-form-group id="dueDate" label="Data rezerwacji" label-for="dueDate">

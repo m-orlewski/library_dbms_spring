@@ -77,10 +77,10 @@ public class ReservationControllerTest {
         client1.setId(1);
         client2.setId(2);
 
-        reservation1 = new Reservation(0, LocalDate.of(2023, 6, 10), LocalDate.of(2023, 6, 15), book1, client1);
-        reservation2 = new Reservation(1, LocalDate.of(2023, 6, 9), LocalDate.of(2023, 6, 13), book1, client2);
-        reservation3 = new Reservation(0, LocalDate.of(2023, 6, 1), LocalDate.of(2023, 6, 25), book1, client2);
-        reservation4 = new Reservation(0, LocalDate.of(2023, 6, 11), LocalDate.of(2023, 6, 25), book2, client2);
+        reservation1 = new Reservation(LocalDate.of(2023, 6, 10), LocalDate.of(2023, 6, 15), book1, client1);
+        reservation2 = new Reservation(LocalDate.of(2023, 6, 9), LocalDate.of(2023, 6, 13), book1, client2);
+        reservation3 = new Reservation(LocalDate.of(2023, 6, 1), LocalDate.of(2023, 6, 25), book1, client2);
+        reservation4 = new Reservation(LocalDate.of(2023, 6, 11), LocalDate.of(2023, 6, 25), book2, client2);
 
         reservation1.setId(1);
         reservation2.setId(2);
@@ -171,7 +171,7 @@ public class ReservationControllerTest {
     public void createReservationOverQuantityButDatesDoNotOverlap_success() throws Exception {
         mapper.registerModule(new JavaTimeModule());
 
-        Reservation noOverlapReservation = new Reservation(0, LocalDate.of(2023, 6, 8), LocalDate.of(2023, 6, 9), book1, client1);
+        Reservation noOverlapReservation = new Reservation(LocalDate.of(2023, 6, 8), LocalDate.of(2023, 6, 9), book1, client1);
 
         List<Reservation> currentReservations = new ArrayList<>(Arrays.asList(reservation2, noOverlapReservation));
 
@@ -193,7 +193,7 @@ public class ReservationControllerTest {
     public void createReservationOverQuantityDatesOverlap_failure() throws Exception {
         mapper.registerModule(new JavaTimeModule());
 
-        Reservation overlapReservation = new Reservation(0, LocalDate.of(2023, 6, 12), LocalDate.of(2023, 6, 17), book1, client1);
+        Reservation overlapReservation = new Reservation(LocalDate.of(2023, 6, 12), LocalDate.of(2023, 6, 17), book1, client1);
 
         List<Reservation> currentReservations = new ArrayList<>(Arrays.asList(reservation2, overlapReservation));
 
@@ -214,7 +214,7 @@ public class ReservationControllerTest {
     @Test
     public void updateReservationFirstReservation_success() throws Exception {
 
-        Reservation updatedReservation = new Reservation(0, LocalDate.of(2023, 6, 10), LocalDate.of(2024, 6, 15), book1, client1);
+        Reservation updatedReservation = new Reservation(LocalDate.of(2023, 6, 10), LocalDate.of(2024, 6, 15), book1, client1);
 
         Mockito.when(reservationRepository.findById(reservation1.getId())).thenReturn(Optional.of(reservation1));
         Mockito.when(reservationRepository.save(updatedReservation)).thenReturn(updatedReservation);

@@ -81,7 +81,6 @@ public class ReservationController {
 	public ResponseEntity<String> createReservation(@RequestBody Reservation reservationRequest) {
 		Reservation reservation = new Reservation();
 
-        reservation.setStatus(reservationRequest.getStatus());
         reservation.setDueDate(reservationRequest.getDueDate());
         reservation.setReturnDate(reservationRequest.getReturnDate());
 
@@ -112,7 +111,6 @@ public class ReservationController {
 	public ResponseEntity<String> updateReservation(@PathVariable(value = "id") int reservationId, @RequestBody Reservation reservationRequest) throws ResourceNotFoundException {
 		Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() -> new ResourceNotFoundException("Reservation not found for this id :: " + reservationId));
 
-        reservation.setStatus(reservationRequest.getStatus());
         reservation.setDueDate(reservationRequest.getDueDate());
         reservation.setReturnDate(reservationRequest.getReturnDate());
         reservation.setBook(reservationRequest.getBook());

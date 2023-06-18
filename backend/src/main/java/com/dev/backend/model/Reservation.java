@@ -18,12 +18,6 @@ public class Reservation {
 	private int id;
 
 	/**
-	 * Status rezerwacji: 0 - , 1 - 
-	 */
-	@Column(name = "status", nullable = false)
-	private int status;
-
-	/**
 	 * Data rezerwacji
 	 */
 	@Column(name = "due_date", nullable = false)
@@ -51,8 +45,7 @@ public class Reservation {
 
 	public Reservation() {}
 	
-	public Reservation(int status, LocalDate dueDate, LocalDate returnDate, Book book, Client client) {
-        this.status = status;
+	public Reservation(LocalDate dueDate, LocalDate returnDate, Book book, Client client) {
         this.dueDate = dueDate;
         this.returnDate = returnDate;
         this.book = book;
@@ -64,13 +57,6 @@ public class Reservation {
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	
-	public int getStatus() {
-		return status;
-	}
-	public void setStatus(int status) {
-		this.status = status;
 	}
 	
 	public LocalDate getDueDate() {
@@ -113,7 +99,7 @@ public class Reservation {
 
 	@Override
 	public String toString() {
-		return "Reservation [id=" + id + ", status=" + status + ", dueDate=" + dueDate + ", returnDate=" + returnDate + "]" +
+		return "Reservation [id=" + id + ", dueDate=" + dueDate + ", returnDate=" + returnDate + "]" +
         "\non " + book + "\nfor " + client;
 	}
 }

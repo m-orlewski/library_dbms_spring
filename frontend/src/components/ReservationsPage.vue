@@ -71,11 +71,6 @@ export default {
                     sortable: true
                 },
                 {
-                    key:'status',
-                    label:'Status rezerwacji', 
-                    sortable: true
-                },
-                {
                     key:'dueDate',
                     label:'Data rezerwacji',
                     sortable: true
