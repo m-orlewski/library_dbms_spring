@@ -1,5 +1,5 @@
 <template>
-    <b-form class="mt-3" @submit="onSubmit">
+    <b-form class="mt-3" @submit.prevent="onSubmit">
 
       <p v-if="errors.length">
       <b>Błąd:</b>
@@ -117,7 +117,10 @@
                       this.$emit("showSuccessAlert");
                   })
                   .catch((error) => {
-                      console.log(error);
+                    console.log(error);
+                    this.$emit("closeUpdateModal");
+                    this.$emit("reloadDataTable");
+                    this.$emit("showFailureAlert");
                   })
           },
           getBooksData() {

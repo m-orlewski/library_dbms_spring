@@ -1,5 +1,5 @@
 <template>
-  <b-form class="mt-3" @submit="onSubmit">
+  <b-form class="mt-3" @submit.prevent="onSubmit">
 
     <p v-if="errors.length">
     <b>Błąd:</b>
@@ -98,13 +98,20 @@ export default {
 
         axios.post(this.API_URL + '/reservations', this.reservation)
             .then((response) => {
-                console.log(response.status);
+                console.log(response);
                 this.$emit("closeCreateModal");
                 this.$emit("reloadDataTable");
                 this.$emit("showSuccessAlert");
             })
             .catch((error) => {
-                console.log(error);
+                if (error.response.status == 409) {
+                  this.$emit("closeCreateModal");
+                  this.$emit("reloadDataTable");
+                  this.$emit("showFailureAlert");
+                }
+                else {
+                  console.log(error);
+                }
             });
     },
     getBooksData() {
@@ -147,7 +154,7 @@ export default {
             console.log(error);
         })
     },
-    onSubmit(e) {
+    onSubmit() {
       this.errors = [];
       const dueDate = new Date(this.reservation.dueDate);
       const returnDate = new Date(this.reservation.returnDate);
@@ -157,7 +164,6 @@ export default {
       }
       else {
         this.errors.push("Data zwrotu nie może być późniejsza niż data rezerwacji");
-        e.preventDefault();
       }
     }
     }

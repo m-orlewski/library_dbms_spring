@@ -150,21 +150,27 @@ public class ReservationController {
 		}
 
 		// rezerwacji jest więcej niż egzemplarzy - sprawdzić czy daty na siebie nie nachodzą
-		boolean datesOverlap = true;
+		int overlaps = 0;
 		for (Reservation currentReservation : currentReservations) {
 			if (reservation.getReturnDate().isBefore(currentReservation.getDueDate()) ||
 				reservation.getDueDate().isAfter(currentReservation.getReturnDate())) {
-					datesOverlap = false;
-					break;
-				}
+				continue;
+			}
+			System.out.println("***** Found overlap between " + reservation + " and " + currentReservation);
+			overlaps++;
 		}
 
-		if (datesOverlap) {
-			System.out.println("***** Reservation is NOT valid because datesOverlap = true");
+		if (overlaps < reservation.getBook().getQuantity()) {
+			System.out.println("***** Reservation is valid because overlaps < reservation.getBook().getQuantity()");
+			return true; // nowa rezerwacja nie koliduje z obecnymi
+		}
+		else {
+			System.out.println("***** Reservation is NOT valid because overlaps >= reservation.getBook().getQuantity()");
 			return false; // nowa rezerwacja koliduje z obecnymi
 		}
+		
+		
 
-		System.out.println("***** Reservation is valid because datesOverlap = false");
-		return true; // nowa rezerwacja nie koliduje z obecnymi
+
 	}
 }

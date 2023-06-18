@@ -6,6 +6,10 @@
             {{ alertMessage }}
         </b-alert>
 
+        <b-alert v-model="showFailureAlert" variant="danger" dismissible>
+            {{ alertMessage }}
+        </b-alert>
+
         <b-button block id="show-btn" @click="showCreateModal">
             <b-icon-plus class="text-white"></b-icon-plus>
             <span class="h6 text-white">Dodaj rezerwację</span>
@@ -31,11 +35,11 @@
         </b-modal>
     
         <b-modal ref="create-reservation-modal" size="xl" hide-footer title="Nowa rezerwacja">
-            <create-reservation-form @closeCreateModal="closeCreateModal" @reloadDataTable="getReservationsData" @showSuccessAlert="showAlertCreate"></create-reservation-form>
+            <create-reservation-form @closeCreateModal="closeCreateModal" @reloadDataTable="getReservationsData" @showSuccessAlert="showAlertCreate" @showFailureAlert="showAlertCreateFailed"></create-reservation-form>
         </b-modal>
 
         <b-modal ref="update-reservation-modal" size="xl" hide-footer title="Edytuj rezerwację">
-            <update-reservation-form @closeUpdateModal="closeUpdateModal" @reloadDataTable="getReservationsData" @showSuccessAlert="showAlertUpdate" :reservationId="reservationId"></update-reservation-form>
+            <update-reservation-form @closeUpdateModal="closeUpdateModal" @reloadDataTable="getReservationsData" @showSuccessAlert="showAlertUpdate" @showFailureAlert="showAlertCreateFailed" :reservationId="reservationId"></update-reservation-form>
         </b-modal>
 
         <b-modal ref="delete-reservation-modal" size="md" hide-footer title="Potwierdź usunięcie rezerwacji">
@@ -91,6 +95,7 @@ export default {
             bookId: Number,
             clientId: Number,
             showSuccessAlert: false,
+            showFailureAlert: false,
             alertMessage: '',
         };
     },
@@ -133,7 +138,14 @@ export default {
         },
         showAlertCreate() {
             this.showSuccessAlert = true;
+            this.showFailureAlert = false;
             this.alertMessage = "Rezerwacja dodana do bazy";
+        },
+        showAlertCreateFailed() {
+            console.log('showAlertCreateFailed');
+            this.showFailureAlert = true;
+            this.showSuccessAlert = false;
+            this.alertMessage = "Nowa rezerwacja konfliktuje z obecnymi";
         },
         showUpdateModal(id) {
             console.log('Update Form Opened for id=' + id);
@@ -146,6 +158,7 @@ export default {
         },
         showAlertUpdate() {
             this.showSuccessAlert = true;
+            this.showFailureAlert = false;
             this.alertMessage = "Zaktualizowano rezerwację";
         },
         showDeleteModal(id) {
@@ -159,6 +172,7 @@ export default {
         },
         showAlertDelete() {
             this.showSuccessAlert = true;
+            this.showFailureAlert = false;
             this.alertMessage = "Usunięto rezerwację";
         }
     },
