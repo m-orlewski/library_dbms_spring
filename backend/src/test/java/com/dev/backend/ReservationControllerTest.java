@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -51,6 +49,8 @@ public class ReservationControllerTest {
     @MockBean
     ClientRepository clientRepository;
 
+    ReservationController reservationController;
+
     private Book book1;
     private Book book2;
 
@@ -64,6 +64,8 @@ public class ReservationControllerTest {
 
     @BeforeEach
     public void setUp() {
+
+        reservationController = new ReservationController();
 
         book1 = new Book("book1", "author1", "genre1", 2);
         book2 = new Book("book2", "author2", "genre2", 2);

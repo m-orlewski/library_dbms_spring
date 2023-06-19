@@ -1,6 +1,9 @@
 package com.dev.backend.controller;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import com.dev.backend.model.Book;
 import com.dev.backend.model.Client;
@@ -139,38 +142,52 @@ public class ReservationController {
 		return new ResponseEntity<HttpStatus>(HttpStatus.ACCEPTED);
 	}
 
+	/**
+	 * Funkcja sprawdzająca czy nowa rezerwacja nie wywołuje konfliktów
+	 * @param reservation - nowa lub edytowana rezerwacja
+	 * @return true jeżeli rezerwacja może zostać dodana
+	 */
 	public boolean isReservationValid(Reservation reservation) {
-		// lista rezerwacji na daną ksiażkę z wykluczeniem rezerwacji którą dodajemy/edytujemy
-		System.out.println("***** isReservationValid for " + reservation);
+		// lista rezerwacji na daną ksiażkę z wykluczeniem rezerwacji
 		List<Reservation> currentReservations = reservationRepository.findByBookAndIdNot(reservation.getBook(), reservation.getId());
+		currentReservations.add(reservation);
 
-		if (currentReservations.size() < reservation.getBook().getQuantity()) {
-			System.out.println("***** Reservation is valid because " + currentReservations.size() + " < " + reservation.getBook().getQuantity());
-			return true; // dostępny egzemplarz bez rezerwacji
-		}
-
-		// rezerwacji jest więcej niż egzemplarzy - sprawdzić czy daty na siebie nie nachodzą
-		int overlaps = 0;
-		for (Reservation currentReservation : currentReservations) {
-			if (reservation.getReturnDate().isBefore(currentReservation.getDueDate()) ||
-				reservation.getDueDate().isAfter(currentReservation.getReturnDate())) {
-				continue;
+		// sortuje rezerwacje rosnąco po dacie rezerwacji
+		Collections.sort(currentReservations, new Comparator<Reservation>() {
+			@Override
+			public int compare(Reservation r1, Reservation r2) {
+				return r1.getDueDate().compareTo(r2.getDueDate());
 			}
-			System.out.println("***** Found overlap between " + reservation + " and " + currentReservation);
-			overlaps++;
-		}
+		});
 
-		if (overlaps < reservation.getBook().getQuantity()) {
-			System.out.println("***** Reservation is valid because overlaps < reservation.getBook().getQuantity()");
-			return true; // nowa rezerwacja nie koliduje z obecnymi
-		}
-		else {
-			System.out.println("***** Reservation is NOT valid because overlaps >= reservation.getBook().getQuantity()");
-			return false; // nowa rezerwacja koliduje z obecnymi
-		}
-		
-		
+		// Kopiec typu min sortowany po dacie zwrotu w każdym momencie
+		PriorityQueue<Reservation> q = new PriorityQueue<Reservation>(new Comparator<Reservation>() {
+			@Override
+			public int compare(Reservation r1, Reservation r2) {
+				return r1.getReturnDate().compareTo(r2.getReturnDate());
+			}
+		});
+
+		// Dodajemy pierwszą rezerwację
+		q.add(currentReservations.get(0));
 
 
+		// Iterujemy przez pozostałe rezerwacje, w każdym momencie q.size() oznacza ilość zajętych książek
+		for (int i=1; i < currentReservations.size(); i++) {
+			
+			if (!currentReservations.get(i).getDueDate().isBefore(q.peek().getReturnDate())) {
+				q.poll();
+			}
+
+			q.add(currentReservations.get(i));
+
+			if (q.size() > reservation.getBook().getQuantity()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
+
+	
 }
