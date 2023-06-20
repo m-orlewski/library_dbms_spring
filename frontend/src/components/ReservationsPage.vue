@@ -16,11 +16,11 @@
         </b-button>
 
         <b-table :items="reservations" :fields="fields" stacked="md" responsive="sm" striped hover fixed>
-            <template #cell(actions1)="data">
+            <template #cell(Dane)="data">
               <b-icon-book class="action-item mx-3" variant="primary" @click="showBookDetails(data.item.book.id)"></b-icon-book>
               <b-icon-person class="action-item mx-3" variant="primary" @click="showClientDetails(data.item.client.id)"></b-icon-person>
             </template>
-            <template #cell(actions2)="data">
+            <template #cell(Akcje)="data">
               <b-button size="sm" @click="showUpdateModal(data.item.id)" class="mx-1">Edytuj</b-button>
               <b-button size="sm" variant="danger" @click="showDeleteModal(data.item.id)" class="mx-1">Usuń</b-button>
             </template>
@@ -85,10 +85,10 @@ export default {
                     sortable: true
                 },
                 {
-                    key: 'actions1',
+                    key: 'Dane',
                 },
                 {
-                    key: 'actions2',
+                    key: 'Akcje',
                 }],
             reservations: [],
             reservationId: Number,

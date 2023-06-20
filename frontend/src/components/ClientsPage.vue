@@ -12,7 +12,7 @@
         </b-button>
 
         <b-table :items="clients" :fields="fields" stacked="md" responsive="sm" striped hover fixed>
-            <template #cell(actions)="data">
+            <template #cell(Akcje)="data">
               <b-button size="sm" @click="showUpdateModal(data.item.id)" class="mx-1">Edytuj</b-button>
               <b-button size="sm" variant="danger" @click="showDeleteModal(data.item.id)" class="mx-1">Usuń</b-button>
         </template>
@@ -64,7 +64,7 @@ export default {
                     label:'Nazwisko',
                     sortable: true},
                 {
-                    key: 'actions',
+                    key: 'Akcje',
                 }],
             clients: [],
             clientId: Number,

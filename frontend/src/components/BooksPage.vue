@@ -12,7 +12,7 @@
         </b-button>
 
         <b-table :items="books" :fields="fields" stacked="md" responsive="sm" striped hover fixed>
-            <template #cell(actions)="data">
+            <template #cell(Akcje)="data">
               <b-button size="sm" @click="showUpdateModal(data.item.id)" class="mx-1">Edytuj</b-button>
               <b-button size="sm" variant="danger" @click="showDeleteModal(data.item.id)" class="mx-1">Usuń</b-button>
         </template>
@@ -72,7 +72,7 @@ export default {
                     label:'Ilość egzemplarzy'
                 },
                 {
-                    key: 'actions',
+                    key: 'Akcje',
                 }],
             books: [],
             bookId: Number,
